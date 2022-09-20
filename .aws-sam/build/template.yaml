@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'http-lambda-authorizer
+
+  Sample SAM Template for http-lambda-authorizer
+
+  '
+Globals:
+  Api:
+    Cors:
+      AllowMethods: '''GET,POST,OPTIONS'''
+      AllowHeaders: '''content-type'''
+      AllowOrigin: '''*'''
+      AllowCredentials: '''*'''
+  Function:
+    Timeout: 60
+Parameters:
+  Memory:
+    Type: Number
+Resources:
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: AuthFunction
+      Handler: com.auth.HttpAuthorizerHandler::handleRequest
+      Policies:
+      - SecretsManagerReadWrite
+      Runtime: java11
+      Architectures:
+      - x86_64
+      MemorySize:
+        Ref: Memory
+      Environment:
+        Variables:
+          PARAM1: VALUE
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+    Metadata:
+      SamResourceId: AuthFunction
+Outputs:
+  AuthFunction:
+    Description: Auth Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - AuthFunction
+      - Arn
+  AuthFunctionIamRole:
+    Description: Implicit IAM Role created for Auth function
+    Value:
+      Fn::GetAtt:
+      - AuthFunctionRole
+      - Arn
